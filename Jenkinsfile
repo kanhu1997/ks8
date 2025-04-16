@@ -8,12 +8,7 @@ pipeline {
         K8S_CONTEXT = 'docker-desktop'
     }
 
-    stages {
-        stage('Clone GitHub Repo') {
-            steps {
-                git 'https://github.com/kanhu1997/ks8.git'
-            }
-        }
+    
 
         stage('Build Docker Image') {
             steps {
