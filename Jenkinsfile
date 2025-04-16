@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = 'DockerHub-Office'    // Jenkins DockerHub credential ID
+        DOCKER_HUB_CREDENTIALS = 'DockerHub-Office'
         IMAGE_NAME = 'charan208/dpt09'
         IMAGE_TAG = 'v1'
         K8S_CONTEXT = 'docker-desktop'
@@ -13,7 +13,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                    bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% ."
                 }
             }
         }
@@ -26,7 +26,9 @@ pipeline {
                         usernameVariable: 'DOCKER_USERNAME',
                         passwordVariable: 'DOCKER_PASSWORD'
                     )]) {
-                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                        bat """
+                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                        """
                     }
                 }
             }
@@ -35,7 +37,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                    bat "docker push %IMAGE_NAME%:%IMAGE_TAG%"
                 }
             }
         }
@@ -77,9 +79,8 @@ spec:
     targetPort: 3000
     nodePort: 30080
 """
-                    // Deploy to Docker Desktop Kubernetes
-                    sh "kubectl config use-context ${K8S_CONTEXT}"
-                    sh "kubectl apply -f k8s-deployment.yaml"
+                    bat "kubectl config use-context %K8S_CONTEXT%"
+                    bat "kubectl apply -f k8s-deployment.yaml"
                 }
             }
         }
