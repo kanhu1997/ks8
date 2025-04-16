@@ -8,7 +8,7 @@ pipeline {
         K8S_CONTEXT = 'docker-desktop'
     }
 
-    
+    stages {
 
         stage('Build Docker Image') {
             steps {
@@ -76,8 +76,8 @@ spec:
   - port: 80
     targetPort: 3000
     nodePort: 30080
-                    """
-                    // Apply to Kubernetes
+"""
+                    // Deploy to Docker Desktop Kubernetes
                     sh "kubectl config use-context ${K8S_CONTEXT}"
                     sh "kubectl apply -f k8s-deployment.yaml"
                 }
