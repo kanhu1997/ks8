@@ -4,11 +4,17 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'DockerHub-Office'
         IMAGE_NAME = 'charan208/dpt09'
-        IMAGE_TAG = 'v1'
+        IMAGE_TAG = "v${BUILD_NUMBER}"
         K8S_CONTEXT = 'docker-desktop'
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/kanhu1997/ks8.git'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -25,9 +31,7 @@ pipeline {
                         usernameVariable: 'DOCKER_USERNAME',
                         passwordVariable: 'DOCKER_PASSWORD'
                     )]) {
-                        bat """
-                            echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
-                        """
+                        bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
                     }
                 }
             }
@@ -36,9 +40,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    retry(3) {
-                        bat "docker push %IMAGE_NAME%:%IMAGE_TAG%"
-                    }
+                    bat "docker push %IMAGE_NAME%:%IMAGE_TAG%"
                 }
             }
         }
@@ -46,10 +48,23 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    bat "kubectl config use-context %K8S_CONTEXT%"
-                    bat "kubectl apply -f k8s\\deployment.yaml"
+                    // Replace the image tag in YAML before applying
+                    bat """
+                        powershell -Command "(Get-Content k8s\\deployment.yaml) -replace 'IMAGE_TAG', '%IMAGE_TAG%' | Set-Content k8s\\deployment-temp.yaml"
+                        kubectl config use-context %K8S_CONTEXT%
+                        kubectl apply -f k8s\\deployment-temp.yaml
+                    """
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Successfully deployed: %IMAGE_NAME%:%IMAGE_TAG%"
+        }
+        failure {
+            echo "❌ Build or deploy failed"
         }
     }
 }
