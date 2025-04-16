@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
       - name: dpt09
-        image: charan208/dpt09:v1
+        image: dpt09-local:latest   # local image
         ports:
         - containerPort: 3000
+
 ---
 apiVersion: v1
 kind: Service
