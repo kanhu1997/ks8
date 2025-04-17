@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'charan208/dpt09'
-        IMAGE_TAG = 'v12'
+        IMAGE_TAG = 'v13'
         K8S_CONTEXT = 'docker-desktop'
     }
 

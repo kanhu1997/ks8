@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: dpt09
-          image: charan208/dpt09:v12
+          image: charan208/dpt09:v13
           ports:
             - containerPort: 3000
