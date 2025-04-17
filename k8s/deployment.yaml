@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: dpt09
-          image: charan208/dpt09:v13  # ✅ make sure this exists on Docker Hub
+          image: charan208/dpt09:v12  # ✅ make sure this exists on Docker Hub
           ports:
             - containerPort: 3000
 ---
